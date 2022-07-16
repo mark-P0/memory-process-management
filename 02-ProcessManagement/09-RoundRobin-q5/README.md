@@ -9,7 +9,7 @@
 
 ## Screenshots
 
-![Program main screen](./graphics/09-main.png)
+![Program main screen](./graphics/00-main.png)
 ![Sample inputs](./graphics/09-examples.png)
 ![Sample results](./graphics/09-results.png)
 ![Sample summary](./graphics/09-summary.png)

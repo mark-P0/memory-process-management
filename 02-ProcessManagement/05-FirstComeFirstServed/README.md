@@ -6,7 +6,7 @@
 
 ## Screenshots
 
-![Program main screen](./graphics/05-main.png)
+![Program main screen](./graphics/00-main.png)
 ![Sample inputs](./graphics/05-examples.png)
 ![Sample results](./graphics/05-results.png)
 ![Sample summary](./graphics/05-summary.png)
