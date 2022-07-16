@@ -1,0 +1,19 @@
+[flake8]
+ignore =
+    ### [GLOBALS]
+    ## Allow multiple leading comments symbols (#)
+    E266,
+    ## Allow long lines
+    E501,
+    ## Allow breaking operators
+    W503,
+
+    ### [PROJECT-SPECIFIC]
+    ## Allow extra whitespaces within dictionary items
+    E241,
+    ## Allow extra whitespaces within lists
+    E201,
+    ## Allow outdented comments (whole lines actually)
+    E122,
+    ## Allow "unused" imports, as they are actually used by Kivy
+    F401,
