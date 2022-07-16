@@ -1,0 +1,535 @@
+#: import NoTrns kivy.uix.screenmanager.NoTransition
+#: import SldTrns kivy.uix.screenmanager.SlideTransition
+
+ScreenManager:
+	## TODO: Store name constants in separate file?
+
+	HomeScreen:
+		name: 'home'
+
+	LoadingScreen:
+		name: 'loading'
+
+	# ## Dynamic amount of output screens, i.e. event types
+	# ## DEBUG: Comment this out!
+	# OutputScreen:
+	# 	name: 'output'
+
+	# ## TODO: Remove this?
+	# SummaryScreen:
+	# 	name: 'summary'
+
+
+<SummaryScreen>:
+	name: 'summary'
+
+	BoxLayout:
+		padding: '24dp'
+
+		## <tables>
+		BoxLayout:
+			orientation: 'vertical'
+			size_hint_x: 0.4
+
+			## Process "characteristics" table
+			BoxLayout:
+				orientation: 'vertical'
+				spacing: '8dp'
+
+				Label:
+					text: 'Processes'
+					# size_hint_y: 0.1
+					size_hint_y: None
+					height: self.texture_size[1]
+					text_size: self.size[0], None
+					halign: 'left'
+					color: 0, 0, 0, 1
+					font_size: '14sp'
+					italic: True
+
+				ScrollView:
+					MDGridLayout:
+						id: char_table
+						adaptive_height: True
+
+						cols: 5
+						padding: '8dp'
+						spacing: '12dp', 0
+
+						# md_bg_color: 0, 1, 0, 0.25
+
+			## Summary values
+			BoxLayout:
+				orientation: 'vertical'
+				size_hint_y: 0.4
+				padding: 0, '24dp', 0, 0
+				spacing: '8dp'
+
+				Label:
+					text: 'Summary values'
+					# size_hint_y: 0.1
+					size_hint_y: None
+					height: self.texture_size[1]
+					text_size: self.size[0], None
+					halign: 'left'
+					color: 0, 0, 0, 1
+					font_size: '14sp'
+					italic: True
+
+				ScrollView:
+					MDGridLayout:
+						id: summary_table
+						adaptive_height: True
+
+						cols: 3
+						padding: '8dp'
+						spacing: '18dp', 0
+
+						# md_bg_color: 0, 0, 1, 0.25
+
+		## Button(s)
+		MDIconButton:
+			pos_hint: {'center_x': 0.5, 'top': 1}
+			# size_hint_x: 0.1
+
+			icon: 'chevron-up'
+
+			on_release:
+				app.root.transition.direction = 'down'
+				app.root.current = app.current_output_screen
+
+		## Event list
+		ScrollView:
+			size_hint_x: 0.25
+
+			MDGridLayout:
+				id: events
+				adaptive_height: True
+
+				cols: 3
+				padding: '8dp'
+				spacing: '8dp', 0
+
+				# md_bg_color: 0, 1, 1, 0.25
+
+		# Widget:
+		# 	size_hint_x: 0.2
+		# 	canvas:
+		# 		Color:
+		# 			rgba: 0, 1, 1, 0.25
+		# 		Rectangle:
+		# 			pos: self.pos
+		# 			size: self.size
+
+
+<OutputBarButton@MDIconButton>:
+	pos_hint: {'center_y': 0.5}
+	user_font_size: '32sp'
+
+
+<OutputLabel@Label>:
+	size_hint_y: None
+	height: self.texture_size[1]
+	text_size: self.size[0], None
+	halign: 'left'
+	color: 0, 0, 0, 1
+	font_size: '14sp'
+	italic: True
+
+
+<OutputScreen>:
+	BoxLayout:
+		orientation: 'vertical'
+		# padding: '24dp', 0, '24dp', '24dp'
+		padding: '24dp'
+		spacing: '12dp'
+
+		canvas:
+			Color:
+				rgba: 1, 1, 1, 1
+			Rectangle:
+				pos: self.pos
+				size: self.size
+
+		## <top-bar>
+		BoxLayout:
+			id: top_bar
+			size_hint_y: 0.25
+
+			# ## Menu button
+			# OutputBarButton:
+			# 	id: menu_button
+			# 	icon: 'menu'
+			# 	on_release:
+			# 		app.popup_message('warning', 'This feature is not yet implemented.')
+
+			## Time | Event Type | Job
+			Label:
+				id: header_info
+				padding: '12dp', 0
+
+				text: 'Time | Event Type | Job'
+				markup: True
+				text_size: self.size[0], None
+				halign: 'left'
+				color: 0, 0, 0, 1
+				font_size: '24sp'
+
+			## Control buttons
+			BoxLayout:
+				id: header_buttons
+				size_hint_x: 0.33
+
+				Widget:  # Spacer
+
+				OutputBarButton:
+					id: prev_button
+					icon: 'arrow-left'
+					on_release:
+						app.root.transition = NoTrns()
+						root.btn_callback('prev')
+
+				OutputBarButton:
+					icon: 'chevron-down'
+					on_release:
+						app.current_output_screen = root.name
+
+						app.root.transition = SldTrns()
+						app.root.transition.direction = 'up'
+						app.root.current = 'summary'
+
+				OutputBarButton:
+					icon: 'home'
+					on_release:
+						app.root.transition = SldTrns()
+						app.root.transition.direction = 'right'
+						app.root.current = 'home'
+
+				OutputBarButton:
+					id: next_button
+					icon: 'arrow-right'
+					on_release:
+						app.root.transition = NoTrns()
+						root.btn_callback('next')
+
+		## Gantt chart
+		BoxLayout:
+			orientation: 'vertical'
+
+			OutputLabel:
+				text: 'Gantt Chart'
+
+			ResizableDraggablePicture:
+				id: scatter_container
+
+				# canvas:
+				# 	Color:
+				# 		rgba: 0, 1, 1, 0.25
+				# 	Rectangle:
+				# 		pos: self.pos
+				# 		size: self.size
+
+				# Image:
+				# 	id: scatter_image
+				# 	# ## DEBUG: Remove this source argument
+				# 	# source: 'memory_map/NPHBWDyJ_0.png'
+
+		## Waiting states
+		BoxLayout:
+			orientation: 'vertical'
+
+			OutputLabel:
+				text: 'Process States'
+
+			MDGridLayout:
+				id: waitings
+				adaptive_height: True
+
+				rows: 2
+				padding: '12dp'
+				spacing: '24dp', 0
+
+				# md_bg_color: 1, 0, 1, 0.25
+
+		## <main-content>
+		# BoxLayout:
+		# 	id: main_content
+
+		# 	## <tables>
+		# 	BoxLayout:
+		# 		orientation: 'vertical'
+		# 		size_hint_x: 1.66
+
+		# 		spacing: '8dp'
+
+		# 		## Partition Allocation Table (PAT)
+		# 		BoxLayout:
+		# 			orientation: 'vertical'
+
+		# 			Label:
+		# 				text: 'Partition Allocation Table (PAT)'
+		# 				size_hint_y: None
+		# 				height: self.texture_size[1]
+		# 				text_size: self.size[0], None
+		# 				halign: 'left'
+		# 				color: 0, 0, 0, 1
+		# 				font_size: '14sp'
+		# 				italic: True
+
+		# 			ScrollView:
+		# 				MDGridLayout:
+		# 					id: pat
+		# 					adaptive_height: True
+
+		# 					cols: 4
+		# 					padding: '12dp'
+		# 					spacing: '12dp', 0
+
+		# 					# md_bg_color: 1, 0, 0, 0.25
+
+		# 		## Free Allocation Table (FAT)
+		# 		BoxLayout:
+		# 			orientation: 'vertical'
+
+		# 			Label:
+		# 				text: 'Free Allocation Table (FAT)'
+		# 				size_hint_y: None
+		# 				height: self.texture_size[1]
+		# 				text_size: self.size[0], None
+		# 				halign: 'left'
+		# 				color: 0, 0, 0, 1
+		# 				font_size: '14sp'
+		# 				italic: True
+
+		# 			ScrollView:
+		# 				MDGridLayout:
+		# 					id: fat
+		# 					adaptive_height: True
+
+		# 					cols: 4
+		# 					padding: '12dp'
+		# 					spacing: '12dp', 0
+
+		# 					# md_bg_color: 1, 0, 0, 0.25
+
+		# 		## Waiting states
+		# 		BoxLayout:
+		# 			orientation: 'vertical'
+
+		# 			Label:
+		# 				text: 'Waiting jobs'
+		# 				size_hint_y: None
+		# 				height: self.texture_size[1]
+		# 				text_size: self.size[0], None
+		# 				halign: 'left'
+		# 				color: 0, 0, 0, 1
+		# 				font_size: '14sp'
+		# 				italic: True
+
+		# 			MDGridLayout:
+		# 				id: waitings
+		# 				adaptive_height: True
+
+		# 				rows: 2
+		# 				padding: '12dp'
+		# 				spacing: '24dp', 0
+
+		# 				# md_bg_color: 1, 0, 1, 0.25
+
+
+<TableLabel>:
+	color: 0, 0, 0, 1
+	markup: True
+
+
+<TableLabelHeader>:
+	size_hint_y: None
+	height: self.texture_size[1]
+
+
+<TableInput>:
+	pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+	halign: 'center'
+	text_color: 0, 0, 0, 1
+
+	input_filter: root.filter_func
+
+
+<TableInputTime>:
+	size_hint_y: None
+	height: self.minimum_height
+
+	TableInput:
+		id: hour
+		input_filter: self.filter_func_time_hour
+		on_focus: self.unfocus_add_zero()
+	MDLabel:
+		text: ':'
+		halign: 'center'
+		bold: True
+	TableInput:
+		id: minute
+		input_filter: self.filter_func_time_minutes
+		on_focus: self.unfocus_add_zero()
+	TableInputTimePeriod:
+		id: period
+
+
+<TableInputTimePeriod@ButtonBehavior+MDLabel>:
+	halign: 'right'
+	text: 'AM'
+	bold: True
+	underline: True
+	on_release:
+		self.text = 'PM' if self.text == 'AM' else 'AM'
+
+
+<DynamicTypeSelector@MDCheckbox>:
+	group: 'group'
+	# radio_icon_normal: 'checkbox-blank-outline'
+	# radio_icon_down: 'checkbox-marked'
+
+	allow_no_selection: False
+
+
+<HomeScreen>:
+	# MDLabel:
+	# 	# canvas:
+	# 	# 	Color:
+	# 	# 		rgba: 0, 0, 0, 0.25
+	# 	# 	Rectangle:
+	# 	# 		pos: self.pos
+	# 	# 		size: self.size
+	# 	text: root.name
+	# 	# height: self.texture_size[1]
+
+	BoxLayout:
+		orientation: 'vertical'
+		# padding: '24dp', 0, '24dp', '24dp'
+		padding: '48dp', '48dp', '48dp', '24dp'
+
+		## Header
+		Label:
+			size_hint_y: 0.25
+
+			markup: True
+			text:
+				'[font=RobotoThin]Process Management  •••  RR | [/font]' \
+				'[b]Round Robin[/b]'
+			color: 0, 0, 0, 1
+			font_size: '24sp'
+
+		# ## <spacer>
+		# Widget:
+
+		## <center-area>
+		BoxLayout:
+			# size_hint_x: 0.75
+			pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+			padding: '96dp', '36dp'
+			# padding: 0, '36dp'
+			# spacing: '24dp', 0
+
+			## Processes
+			GridLayout:
+				id: proc_table
+				size_hint_x: 0.75
+				# pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+				cols: 3
+				rows: 6
+				# padding: '96dp', '36dp'
+				spacing: '24dp', 0
+
+				# canvas:
+				# 	Color:
+				# 		rgba: 0, 0, 1, 0.25
+				# 	Rectangle:
+				# 		pos: self.pos
+				# 		size: self.size
+
+				## "Table cells" are defined programatically
+
+			## <spacer>
+			Widget:
+				size_hint_x: 0.25
+
+			## <right-side>
+			BoxLayout:
+				orientation: 'vertical'
+				size_hint_x: 0.5
+
+				## Sizes: OS size, Total memory
+				MDBoxLayout:
+					orientation: 'vertical'
+					adaptive_height: True
+
+					TableLabelHeader:
+						text: 'Settings'
+						size_hint_y: None
+						height: self.texture_size[1]
+						bold: True
+						text_size: self.size[0], None
+						halign: 'left'
+
+					MDGridLayout:
+						adaptive_height: True
+
+						cols: 2
+						spacing: '16dp', 0
+
+						TableInput:
+							text: 'Time Quantum (q)'
+							size_hint_x: 0.75
+							disabled: True
+							markup: True
+						# TableInput:
+
+						TableInput:
+							id: rr_quantum
+							text: '5'
+							size_hint_x: 0.25
+							disabled: True
+						# TableInput:
+
+				## <spacer>
+				Widget:
+
+				## Button(s)
+				MDIconButton:
+					# pos_hint: {'center_x': 0.5}
+					pos_hint: {'right': 1}
+					# size_hint_x: 0.1
+
+					icon: 'arrow-right'
+					on_release:
+						app.root.transition.direction = 'left'
+						root.validate_inputs(proc_table, rr_quantum, app.root)
+
+		# ## Button(s)
+		# BoxLayout:
+		# 	size_hint_y: None
+
+		# 	# canvas:
+		# 	# 	Color:
+		# 	# 		rgba: 0, 1, 0, 0.25
+		# 	# 	Rectangle:
+		# 	# 		pos: self.pos
+		# 	# 		size: self.size
+
+		# 	Widget:
+
+		# 	MDIconButton:
+		# 		pos_hint: {'center_x': 0.5}
+		# 		# size_hint_x: 0.1
+		# 		icon: 'arrow-right'
+		# 		# on_release:
+		# 		# 	app.root.transition.direction = 'left'
+		# 		# 	root.validate_inputs(proc_table, app.root)
+
+
+<LoadingScreen>:
+	MDSpinner:
+		pos_hint: {'center_x': 0.5, 'center_y': 0.2}
+		size_hint: [0.1] * 2
+		line_width: '5dp'
